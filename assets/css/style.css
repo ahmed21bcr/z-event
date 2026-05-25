@@ -1,0 +1,106 @@
+/* ===== VARIABLES DE LA CHARTE GRAPHIQUE ===== */
+:root {
+    --bg-primary: #0D0D0D;
+    --bg-secondary: #1A1A2E;
+    --accent: #E94560;
+    --text-primary: #FFFFFF;
+    --text-secondary: #AAAAAA;
+}
+
+/* ===== BASE ===== */
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+}
+
+/* ===== TYPOGRAPHIE ===== */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Rajdhani', sans-serif;
+    color: var(--text-primary);
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+    background-color: var(--bg-secondary) !important;
+    border-bottom: 2px solid var(--accent);
+}
+
+.navbar-brand {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent) !important;
+}
+
+.nav-link {
+    color: var(--text-secondary) !important;
+    font-family: 'Inter', sans-serif;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--accent) !important;
+}
+
+.navbar-toggler-icon {
+    background-image: none;
+}
+
+.navbar-toggler {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* ===== BOUTONS ===== */
+.btn-accent {
+    background-color: var(--accent);
+    color: var(--text-primary);
+    border: none;
+    font-family: 'Inter', sans-serif;
+    border-radius: 8px;
+}
+
+.btn-accent:hover {
+    background-color: #c73652;
+    color: var(--text-primary);
+}
+
+.btn-outline-accent {
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    background-color: transparent;
+    border-radius: 8px;
+}
+
+.btn-outline-accent:hover {
+    background-color: var(--accent);
+    color: var(--text-primary);
+}
+
+/* ===== CARDS ===== */
+.card {
+    background-color: var(--bg-secondary);
+    border: none;
+    border-radius: 8px;
+    color: var(--text-primary);
+}
+
+.card-title {
+    font-family: 'Rajdhani', sans-serif;
+    color: var(--text-primary);
+}
+
+.card-text {
+    color: var(--text-secondary);
+    font-family: 'Inter', sans-serif;
+}
+
+/* ===== FOOTER ===== */
+footer {
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-family: 'Inter', sans-serif;
+    border-top: 1px solid var(--accent);
+    padding: 20px 0;
+    text-align: center;
+}
