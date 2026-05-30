@@ -1,6 +1,5 @@
 <?php
-// Protection de la page
-if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'streamer') { // Si pas connecté ou pas streamer, redirection vers la page de connexion
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'streamer') {
     header('Location: index.php?page=connexion');
     exit;
 }
@@ -12,7 +11,6 @@ if (!in_array($onglet, $onglets_autorises)) {
     $onglet = 'accueil';
 }
 
-// ===== TRAITEMENT FORMULAIRE SAISIE =====
 $message_saisie = '';
 $erreur_saisie = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'creer_live') {
@@ -45,7 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-// ===== DONNÉES ONGLET ACCUEIL =====
 $stmtLives = $pdo->prepare("
     SELECT l.*, e.association
     FROM Live l
@@ -56,7 +53,6 @@ $stmtLives = $pdo->prepare("
 $stmtLives->execute([':id_user' => $id_user]);
 $mes_lives = $stmtLives->fetchAll();
 
-// ===== DONNÉES ONGLET INSCRIPTIONS =====
 $stmtInscriptions = $pdo->prepare("
     SELECT i.email, i.id_inscription, l.nom_live, l.date_live
     FROM Inscription i
@@ -67,7 +63,6 @@ $stmtInscriptions = $pdo->prepare("
 $stmtInscriptions->execute([':id_user' => $id_user]);
 $inscriptions = $stmtInscriptions->fetchAll();
 
-// ===== DONNÉES ONGLET SAISIE =====
 $stmtEvenements = $pdo->prepare("SELECT * FROM Evenement");
 $stmtEvenements->execute();
 $evenements = $stmtEvenements->fetchAll();
@@ -86,7 +81,7 @@ $thematiques = $stmtThemes->fetchAll();
                 <li class="nav-item"><a class="nav-link" href="index.php">Accueil</a></li>
                 <li class="nav-item"><a class="nav-link" href="index.php?page=lives">Lives</a></li>
                 <li class="nav-item">
-                    <a class="nav-link" href="index.php?page=deconnexion" style="color: var(--accent);">
+                    <a class="nav-link nav-link-accent" href="index.php?page=deconnexion">
                         Déconnexion (<?= htmlspecialchars($_SESSION['user']['prenom']) ?>)
                     </a>
                 </li>
@@ -96,11 +91,11 @@ $thematiques = $stmtThemes->fetchAll();
 </nav>
 
 <!-- ONGLETS -->
-<div style="background-color: var(--bg-secondary); border-bottom: 2px solid var(--accent);">
+<div class="onglets-bar">
     <div class="container">
         <div class="d-flex gap-2 py-2">
             <?php foreach (['accueil' => 'Accueil', 'saisie' => 'Saisie', 'inscriptions' => 'Inscriptions', 'statistiques' => 'Statistiques'] as $key => $label) : ?>
-                <a href="index.php?page=espace_streamer&onglet=<?= $key ?>" 
+                <a href="index.php?page=espace_streamer&onglet=<?= $key ?>"
                    class="btn <?= $onglet === $key ? 'btn-accent' : 'btn-outline-accent' ?>">
                     <?= $label ?>
                 </a>
@@ -114,26 +109,28 @@ $thematiques = $stmtThemes->fetchAll();
     <div class="container">
 
         <?php if ($message_saisie) : ?>
-            <div class="alert mb-4" style="background-color: var(--bg-secondary); color: #4CAF50; border: 1px solid #4CAF50;">
+            <div class="alert alert-success-zevent mb-4">
                 <?= htmlspecialchars($message_saisie) ?>
             </div>
         <?php endif; ?>
 
         <!-- ONGLET ACCUEIL -->
         <?php if ($onglet === 'accueil') : ?>
-            <h2 class="mb-4">Mes Lives — <span style="color: var(--text-secondary); font-size: 1rem;"><?= htmlspecialchars($_SESSION['user']['nom_chaine']) ?></span></h2>
+            <h2 class="mb-4">Mes Lives —
+                <span class="text-muted-zevent fs-6"><?= htmlspecialchars($_SESSION['user']['nom_chaine']) ?></span>
+            </h2>
 
             <?php if (empty($mes_lives)) : ?>
-                <p style="color: var(--text-secondary);">Vous n'avez pas encore créé de live.</p>
+                <p class="text-muted-zevent">Vous n'avez pas encore créé de live.</p>
                 <a href="index.php?page=espace_streamer&onglet=saisie" class="btn btn-accent mt-2">Créer mon premier live</a>
             <?php else : ?>
                 <div class="row g-4">
                     <?php foreach ($mes_lives as $live) : ?>
                         <div class="col-md-4">
                             <div class="card p-3">
-                                <div class="ratio ratio-16x9 mb-3" style="background-color: var(--bg-primary); border-radius: 8px; border-left: 4px solid var(--accent);">
+                                <div class="ratio ratio-16x9 mb-3 live-thumbnail">
                                     <div class="d-flex align-items-center justify-content-center">
-                                        <span style="font-size: 2rem; color: var(--accent);">▶</span>
+                                        <span class="live-thumbnail-icon">▶</span>
                                     </div>
                                 </div>
                                 <h5 class="card-title"><?= htmlspecialchars($live['nom_live']) ?></h5>
@@ -150,7 +147,7 @@ $thematiques = $stmtThemes->fetchAll();
             <h2 class="mb-4">Créer un Live</h2>
 
             <?php if ($erreur_saisie) : ?>
-                <div class="alert mb-3" style="background-color: var(--bg-secondary); color: var(--accent); border: 1px solid var(--accent);">
+                <div class="alert alert-error-zevent mb-3">
                     <?= htmlspecialchars($erreur_saisie) ?>
                 </div>
             <?php endif; ?>
@@ -162,24 +159,24 @@ $thematiques = $stmtThemes->fetchAll();
                             <input type="hidden" name="action" value="creer_live">
 
                             <div class="mb-3">
-                                <label class="form-label" style="color: var(--text-secondary);">Nom du live *</label>
-                                <input type="text" name="nom_live" class="form-control" style="background-color: var(--bg-secondary); border: 1px solid var(--accent); color: var(--text-primary);" required>
+                                <label class="form-label form-label-zevent">Nom du live *</label>
+                                <input type="text" name="nom_live" class="form-control form-zevent" required>
                             </div>
 
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label" style="color: var(--text-secondary);">Date *</label>
-                                    <input type="date" name="date_live" class="form-control" style="background-color: var(--bg-secondary); border: 1px solid var(--accent); color: var(--text-primary);" required>
+                                    <label class="form-label form-label-zevent">Date *</label>
+                                    <input type="date" name="date_live" class="form-control form-zevent" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label" style="color: var(--text-secondary);">Heure *</label>
-                                    <input type="time" name="heure_live" class="form-control" style="background-color: var(--bg-secondary); border: 1px solid var(--accent); color: var(--text-primary);" required>
+                                    <label class="form-label form-label-zevent">Heure *</label>
+                                    <input type="time" name="heure_live" class="form-control form-zevent" required>
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label" style="color: var(--text-secondary);">PEGI</label>
-                                <select name="pegi" class="form-select" style="background-color: var(--bg-secondary); border: 1px solid var(--accent); color: var(--text-primary);">
+                                <label class="form-label form-label-zevent">PEGI</label>
+                                <select name="pegi" class="form-select form-zevent">
                                     <option value="">Non défini</option>
                                     <option value="3">PEGI 3</option>
                                     <option value="7">PEGI 7</option>
@@ -190,8 +187,8 @@ $thematiques = $stmtThemes->fetchAll();
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label" style="color: var(--text-secondary);">Événement *</label>
-                                <select name="id_evenement" class="form-select" style="background-color: var(--bg-secondary); border: 1px solid var(--accent); color: var(--text-primary);" required>
+                                <label class="form-label form-label-zevent">Événement *</label>
+                                <select name="id_evenement" class="form-select form-zevent" required>
                                     <option value="">Sélectionner un événement</option>
                                     <?php foreach ($evenements as $evt) : ?>
                                         <option value="<?= $evt['id_evenement'] ?>">
@@ -202,8 +199,8 @@ $thematiques = $stmtThemes->fetchAll();
                             </div>
 
                             <div class="mb-4">
-                                <label class="form-label" style="color: var(--text-secondary);">Description</label>
-                                <textarea name="description" rows="3" class="form-control" style="background-color: var(--bg-secondary); border: 1px solid var(--accent); color: var(--text-primary);"></textarea>
+                                <label class="form-label form-label-zevent">Description</label>
+                                <textarea name="description" rows="3" class="form-control form-zevent"></textarea>
                             </div>
 
                             <button type="submit" class="btn btn-accent w-100">Créer le live</button>
@@ -217,20 +214,20 @@ $thematiques = $stmtThemes->fetchAll();
             <h2 class="mb-4">Inscriptions à mes lives</h2>
 
             <?php if (empty($inscriptions)) : ?>
-                <p style="color: var(--text-secondary);">Aucune inscription pour le moment.</p>
+                <p class="text-muted-zevent">Aucune inscription pour le moment.</p>
             <?php else : ?>
                 <div class="table-responsive">
-                    <table class="table" style="color: var(--text-primary);">
-                        <thead style="border-bottom: 2px solid var(--accent);">
+                    <table class="table table-zevent">
+                        <thead>
                             <tr>
-                                <th style="color: var(--accent);">Email</th>
-                                <th style="color: var(--accent);">Live</th>
-                                <th style="color: var(--accent);">Date du live</th>
+                                <th>Email</th>
+                                <th>Live</th>
+                                <th>Date du live</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($inscriptions as $inscription) : ?>
-                                <tr style="border-bottom: 1px solid var(--bg-secondary);">
+                                <tr>
                                     <td><?= htmlspecialchars($inscription['email']) ?></td>
                                     <td><?= htmlspecialchars($inscription['nom_live']) ?></td>
                                     <td><?= htmlspecialchars($inscription['date_live']) ?></td>
@@ -247,22 +244,22 @@ $thematiques = $stmtThemes->fetchAll();
             <div class="row g-4">
                 <div class="col-md-4">
                     <div class="card p-4 text-center">
-                        <h2 style="color: var(--accent); font-size: 3rem;"><?= count($mes_lives) ?></h2>
-                        <p style="color: var(--text-secondary);">Live<?= count($mes_lives) > 1 ? 's' : '' ?> créé<?= count($mes_lives) > 1 ? 's' : '' ?></p>
+                        <h2 class="stat-number"><?= count($mes_lives) ?></h2>
+                        <p class="stat-label">Live<?= count($mes_lives) > 1 ? 's' : '' ?> créé<?= count($mes_lives) > 1 ? 's' : '' ?></p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="card p-4 text-center">
-                        <h2 style="color: var(--accent); font-size: 3rem;"><?= count($inscriptions) ?></h2>
-                        <p style="color: var(--text-secondary);">Inscription<?= count($inscriptions) > 1 ? 's' : '' ?> totale<?= count($inscriptions) > 1 ? 's' : '' ?></p>
+                        <h2 class="stat-number"><?= count($inscriptions) ?></h2>
+                        <p class="stat-label">Inscription<?= count($inscriptions) > 1 ? 's' : '' ?> totale<?= count($inscriptions) > 1 ? 's' : '' ?></p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="card p-4 text-center">
-                        <h2 style="color: var(--accent); font-size: 3rem;">
+                        <h2 class="stat-number">
                             <?= count($mes_lives) > 0 ? round(count($inscriptions) / count($mes_lives), 1) : 0 ?>
                         </h2>
-                        <p style="color: var(--text-secondary);">Inscriptions par live en moyenne</p>
+                        <p class="stat-label">Inscriptions par live en moyenne</p>
                     </div>
                 </div>
             </div>

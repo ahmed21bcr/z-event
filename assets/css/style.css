@@ -1,4 +1,4 @@
-/* ===== VARIABLES DE LA CHARTE GRAPHIQUE ===== */
+/* ===== VARIABLES CHARTE GRAPHIQUE ===== */
 :root {
     --bg-primary: #0D0D0D;
     --bg-secondary: #1A1A2E;
@@ -20,6 +20,10 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--text-primary);
 }
 
+p {
+    color: var(--text-secondary);
+}
+
 /* ===== NAVBAR ===== */
 .navbar {
     background-color: var(--bg-secondary) !important;
@@ -38,12 +42,13 @@ h1, h2, h3, h4, h5, h6 {
     font-family: 'Inter', sans-serif;
 }
 
-.nav-link:hover, .nav-link.active {
+.nav-link:hover,
+.nav-link.active {
     color: var(--accent) !important;
 }
 
-.navbar-toggler-icon {
-    background-image: none;
+.nav-link-accent {
+    color: var(--accent) !important;
 }
 
 .navbar-toggler {
@@ -95,6 +100,112 @@ h1, h2, h3, h4, h5, h6 {
     font-family: 'Inter', sans-serif;
 }
 
+/* ===== FORMULAIRES ===== */
+.form-zevent {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--accent);
+    color: var(--text-primary);
+}
+
+.form-zevent:focus {
+    background-color: var(--bg-secondary);
+    border-color: var(--accent);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 0.2rem rgba(233, 69, 96, 0.25);
+}
+
+.form-zevent option {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.form-label-zevent {
+    color: var(--text-secondary);
+}
+
+/* ===== ALERTES ===== */
+.alert-success-zevent {
+    background-color: var(--bg-secondary);
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
+}
+
+.alert-error-zevent {
+    background-color: var(--bg-secondary);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+}
+
+/* ===== ONGLETS ===== */
+.onglets-bar {
+    background-color: var(--bg-secondary);
+    border-bottom: 2px solid var(--accent);
+}
+
+/* ===== TABLEAUX ===== */
+.table-zevent {
+    color: var(--text-primary);
+}
+
+.table-zevent thead {
+    border-bottom: 2px solid var(--accent);
+}
+
+.table-zevent thead th {
+    color: var(--accent);
+}
+
+.table-zevent tbody tr {
+    border-bottom: 1px solid var(--bg-secondary);
+}
+
+/* ===== BADGES ===== */
+.badge-accent {
+    background-color: var(--accent);
+    color: var(--text-primary);
+}
+
+.badge-outline-accent {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+}
+
+/* ===== THUMBNAIL LIVE ===== */
+.live-thumbnail {
+    background-color: var(--bg-primary);
+    border-radius: 8px;
+    border-left: 4px solid var(--accent);
+}
+
+.live-thumbnail-icon {
+    font-size: 2rem;
+    color: var(--accent);
+}
+
+/* ===== STAT CARDS ===== */
+.stat-number {
+    color: var(--accent);
+    font-size: 3rem;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+}
+
+/* ===== SECTIONS ===== */
+.section-secondary {
+    background-color: var(--bg-secondary);
+}
+
+.text-accent {
+    color: var(--accent);
+}
+
+.text-muted-zevent {
+    color: var(--text-secondary);
+}
+
 /* ===== FOOTER ===== */
 footer {
     background-color: var(--bg-secondary);
@@ -103,4 +214,14 @@ footer {
     border-top: 1px solid var(--accent);
     padding: 20px 0;
     text-align: center;
+}
+
+/* ===== FILTRES ===== */
+.section-filtres {
+    background-color: var(--bg-secondary);
+}
+
+.live-thumbnail-icon-lg {
+    font-size: 3rem;
+    color: var(--accent);
 }

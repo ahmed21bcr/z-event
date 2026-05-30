@@ -6,7 +6,6 @@ if (!$id_live || !is_numeric($id_live)) {
     exit;
 }
 
-// Récupération du live
 $stmt = $pdo->prepare("
     SELECT l.*, u.nom, u.prenom, u.nom_chaine, e.association, e.date_debut, e.date_fin
     FROM Live l
@@ -22,9 +21,8 @@ if (!$live) {
     exit;
 }
 
-// Récupération des thématiques du live
 $stmtThemes = $pdo->prepare("
-    SELECT t.libelle 
+    SELECT t.libelle
     FROM Thematique t
     JOIN Live_Thematique lt ON t.id_thematique = lt.id_thematique
     WHERE lt.id_live = :id
@@ -32,7 +30,6 @@ $stmtThemes = $pdo->prepare("
 $stmtThemes->execute([':id' => $id_live]);
 $thematiques = $stmtThemes->fetchAll();
 
-// Récupération du matériel du live
 $stmtMateriel = $pdo->prepare("
     SELECT m.libelle, m.marque, lm.quantite
     FROM Materiel m
@@ -42,21 +39,19 @@ $stmtMateriel = $pdo->prepare("
 $stmtMateriel->execute([':id' => $id_live]);
 $materiels = $stmtMateriel->fetchAll();
 
-// Traitement inscription email
 $message = '';
 $erreur = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
-    
+
     if (empty($email)) {
         $erreur = 'Veuillez entrer votre email.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $erreur = 'Format d\'email invalide.';
     } else {
-        // Vérifier si déjà inscrit
         $stmtCheck = $pdo->prepare("SELECT id_inscription FROM Inscription WHERE email = :email AND id_live = :id_live");
         $stmtCheck->execute([':email' => $email, ':id_live' => $id_live]);
-        
+
         if ($stmtCheck->fetch()) {
             $erreur = 'Vous êtes déjà inscrit à ce live.';
         } else {
@@ -67,7 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Nombre d'inscrits
 $stmtCount = $pdo->prepare("SELECT COUNT(*) as total FROM Inscription WHERE id_live = :id");
 $stmtCount->execute([':id' => $id_live]);
 $nbInscrits = $stmtCount->fetch()['total'];
@@ -96,47 +90,44 @@ $nbInscrits = $stmtCount->fetch()['total'];
         <a href="index.php?page=lives" class="btn btn-outline-accent mb-4">← Retour aux lives</a>
 
         <div class="row g-4">
-            <!-- Colonne gauche : infos du live -->
+            <!-- Colonne gauche -->
             <div class="col-md-8">
                 <div class="card p-4">
-                    <!-- Thumbnail -->
-                    <div class="ratio ratio-16x9 mb-4" style="background-color: var(--bg-primary); border-radius: 8px; border-left: 4px solid var(--accent);">
+                    <div class="ratio ratio-16x9 mb-4 live-thumbnail">
                         <div class="d-flex align-items-center justify-content-center">
-                            <span style="font-size: 3rem; color: var(--accent);">▶</span>
+                            <span class="live-thumbnail-icon-lg">▶</span>
                         </div>
                     </div>
 
-                    <h1 class="mb-3" style="color: var(--accent);"><?= htmlspecialchars($live['nom_live']) ?></h1>
+                    <h1 class="mb-3 text-accent"><?= htmlspecialchars($live['nom_live']) ?></h1>
 
                     <div class="d-flex gap-3 mb-3 flex-wrap">
-                        <span style="color: var(--text-secondary);">📅 <?= htmlspecialchars($live['date_live']) ?> à <?= htmlspecialchars($live['heure_live']) ?></span>
-                        <span style="color: var(--text-secondary);">🎮 <?= htmlspecialchars($live['nom_chaine']) ?></span>
+                        <span class="text-muted-zevent">📅 <?= htmlspecialchars($live['date_live']) ?> à <?= htmlspecialchars($live['heure_live']) ?></span>
+                        <span class="text-muted-zevent">🎮 <?= htmlspecialchars($live['nom_chaine']) ?></span>
                         <?php if ($live['PEGI']) : ?>
-                            <span class="badge" style="background-color: var(--accent);">PEGI <?= htmlspecialchars($live['PEGI']) ?></span>
+                            <span class="badge badge-accent">PEGI <?= htmlspecialchars($live['PEGI']) ?></span>
                         <?php endif; ?>
                     </div>
 
                     <?php if ($live['description']) : ?>
-                        <p style="color: var(--text-secondary);"><?= htmlspecialchars($live['description']) ?></p>
+                        <p class="text-muted-zevent"><?= htmlspecialchars($live['description']) ?></p>
                     <?php endif; ?>
 
-                    <!-- Thématiques -->
                     <?php if (!empty($thematiques)) : ?>
                         <div class="mb-3">
-                            <strong style="color: var(--text-secondary);">Thématiques :</strong>
+                            <strong class="text-muted-zevent">Thématiques :</strong>
                             <?php foreach ($thematiques as $theme) : ?>
-                                <span class="badge ms-1" style="background-color: var(--bg-secondary); border: 1px solid var(--accent); color: var(--accent);">
+                                <span class="badge badge-outline-accent ms-1">
                                     <?= htmlspecialchars($theme['libelle']) ?>
                                 </span>
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
 
-                    <!-- Matériel -->
                     <?php if (!empty($materiels)) : ?>
                         <div class="mb-3">
-                            <strong style="color: var(--text-secondary);">Matériel utilisé :</strong>
-                            <ul class="mt-2" style="color: var(--text-secondary);">
+                            <strong class="text-muted-zevent">Matériel utilisé :</strong>
+                            <ul class="mt-2 text-muted-zevent">
                                 <?php foreach ($materiels as $materiel) : ?>
                                     <li><?= htmlspecialchars($materiel['libelle']) ?> — <?= htmlspecialchars($materiel['marque']) ?> (x<?= $materiel['quantite'] ?>)</li>
                                 <?php endforeach; ?>
@@ -146,45 +137,41 @@ $nbInscrits = $stmtCount->fetch()['total'];
                 </div>
             </div>
 
-            <!-- Colonne droite : inscription + infos -->
+            <!-- Colonne droite -->
             <div class="col-md-4">
-                <!-- Infos événement -->
                 <div class="card p-3 mb-3">
-                    <h5 style="color: var(--accent);">Événement</h5>
-                    <p class="mb-1" style="color: var(--text-secondary);">📅 Du <?= htmlspecialchars($live['date_debut']) ?> au <?= htmlspecialchars($live['date_fin']) ?></p>
-                    <p class="mb-0" style="color: var(--text-secondary);">🤝 <?= htmlspecialchars($live['association']) ?></p>
+                    <h5 class="text-accent">Événement</h5>
+                    <p class="mb-1 text-muted-zevent">📅 Du <?= htmlspecialchars($live['date_debut']) ?> au <?= htmlspecialchars($live['date_fin']) ?></p>
+                    <p class="mb-0 text-muted-zevent">🤝 <?= htmlspecialchars($live['association']) ?></p>
                 </div>
 
-                <!-- Compteur inscrits -->
                 <div class="card p-3 mb-3 text-center">
-                    <h2 style="color: var(--accent); font-size: 2.5rem;"><?= $nbInscrits ?></h2>
-                    <p style="color: var(--text-secondary);">personne<?= $nbInscrits > 1 ? 's inscrite·s' : ' inscrite' ?></p>
+                    <h2 class="stat-number"><?= $nbInscrits ?></h2>
+                    <p class="stat-label">personne<?= $nbInscrits > 1 ? 's inscrite·s' : ' inscrite' ?></p>
                 </div>
 
-                <!-- Formulaire inscription -->
                 <div class="card p-3">
-                    <h5 style="color: var(--accent);">S'inscrire au live</h5>
+                    <h5 class="text-accent">S'inscrire au live</h5>
 
                     <?php if ($message) : ?>
-                        <div class="alert" style="background-color: var(--bg-secondary); color: #4CAF50; border: 1px solid #4CAF50;">
+                        <div class="alert alert-success-zevent">
                             <?= htmlspecialchars($message) ?>
                         </div>
                     <?php endif; ?>
 
                     <?php if ($erreur) : ?>
-                        <div class="alert" style="background-color: var(--bg-secondary); color: var(--accent); border: 1px solid var(--accent);">
+                        <div class="alert alert-error-zevent">
                             <?= htmlspecialchars($erreur) ?>
                         </div>
                     <?php endif; ?>
 
                     <form method="POST" action="index.php?page=detail_live&id=<?= $id_live ?>">
                         <div class="mb-3">
-                            <label class="form-label" style="color: var(--text-secondary);">Votre email</label>
-                            <input 
-                                type="email" 
-                                name="email" 
-                                class="form-control"
-                                style="background-color: var(--bg-secondary); border: 1px solid var(--accent); color: var(--text-primary);"
+                            <label class="form-label form-label-zevent">Votre email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                class="form-control form-zevent"
                                 placeholder="votre@email.com"
                                 required
                             >

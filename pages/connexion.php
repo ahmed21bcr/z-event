@@ -1,9 +1,8 @@
 <?php
-session_start(); // Démarrage de la session pour gérer les connexions, pour éviter de se reconnecter à chaque page
+session_start();
 
-// Si déjà connecté, rediriger vers la bonne page
 if (isset($_SESSION['user'])) {
-    if ($_SESSION['user']['role'] === 'admin') { //stock info de l'utilisateur dans la session, on peut vérifier son rôle pour le rediriger vers la bonne page
+    if ($_SESSION['user']['role'] === 'admin') {
         header('Location: index.php?page=espace_admin');
     } else {
         header('Location: index.php?page=espace_streamer');
@@ -11,9 +10,8 @@ if (isset($_SESSION['user'])) {
     exit;
 }
 
-// Traitement du formulaire
 $erreur = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') { // Si le formulaire est soumis
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
@@ -74,34 +72,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') { // Si le formulaire est soumis
         <div class="row justify-content-center">
             <div class="col-md-5">
                 <div class="card p-4">
-                    <h2 class="text-center mb-4" style="color: var(--accent);">Connexion</h2>
+                    <h2 class="text-center mb-4 text-accent">Connexion</h2>
 
                     <?php if ($erreur) : ?>
-                        <div class="alert" style="background-color: var(--bg-secondary); color: var(--accent); border: 1px solid var(--accent);">
+                        <div class="alert alert-error-zevent">
                             <?= htmlspecialchars($erreur) ?>
                         </div>
                     <?php endif; ?>
 
                     <form method="POST" action="index.php?page=connexion">
                         <div class="mb-3">
-                            <label class="form-label" style="color: var(--text-secondary);">Email</label>
-                            <input 
-                                type="email" 
-                                name="email" 
-                                class="form-control" 
-                                style="background-color: var(--bg-secondary); border: 1px solid var(--accent); color: var(--text-primary);"
+                            <label class="form-label form-label-zevent">Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                class="form-control form-zevent"
                                 placeholder="votre@email.com"
                                 required
                             >
                         </div>
                         <div class="mb-4">
-                            <label class="form-label" style="color: var(--text-secondary);">Mot de passe</label>
-                            <input 
-                                type="password" 
-                                name="password" 
-                                class="form-control"
-                                style="background-color: var(--bg-secondary); border: 1px solid var(--accent); color: var(--text-primary);"
-                                placeholder="••••••••"
+                            <label class="form-label form-label-zevent">Mot de passe</label>
+                            <input
+                                type="password"
+                                name="password"
+                                class="form-control form-zevent" 
+                                placeholder="••••••••" 
                                 required
                             >
                         </div>
