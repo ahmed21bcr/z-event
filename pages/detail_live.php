@@ -65,6 +65,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $stmtCount = $pdo->prepare("SELECT COUNT(*) as total FROM Inscription WHERE id_live = :id");
 $stmtCount->execute([':id' => $id_live]);
 $nbInscrits = $stmtCount->fetch()['total'];
+
+// Enregistrement de la vue dans MongoDB
+try {
+    $mongoDB->vues->insertOne([
+        'id_live'    => (int)$id_live,
+        'nom_live'   => $live['nom_live'],
+        'date_vue'   => new MongoDB\BSON\UTCDateTime(), // Stocke la date et l'heure exacte de la vue
+        'ip_visiteur' => $_SERVER['REMOTE_ADDR']
+    ]);
+} catch (Exception $e) {
+    // On ne bloque pas la page si MongoDB échoue
+}
 ?>
 
 <!-- NAVBAR -->

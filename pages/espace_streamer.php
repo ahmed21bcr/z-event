@@ -240,31 +240,49 @@ $thematiques = $stmtThemes->fetchAll();
 
         <!-- ONGLET STATISTIQUES -->
         <?php elseif ($onglet === 'statistiques') : ?>
-            <h2 class="mb-4">Statistiques</h2>
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="card p-4 text-center">
-                        <h2 class="stat-number"><?= count($mes_lives) ?></h2>
-                        <p class="stat-label">Live<?= count($mes_lives) > 1 ? 's' : '' ?> créé<?= count($mes_lives) > 1 ? 's' : '' ?></p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card p-4 text-center">
-                        <h2 class="stat-number"><?= count($inscriptions) ?></h2>
-                        <p class="stat-label">Inscription<?= count($inscriptions) > 1 ? 's' : '' ?> totale<?= count($inscriptions) > 1 ? 's' : '' ?></p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card p-4 text-center">
-                        <h2 class="stat-number">
-                            <?= count($mes_lives) > 0 ? round(count($inscriptions) / count($mes_lives), 1) : 0 ?>
-                        </h2>
-                        <p class="stat-label">Inscriptions par live en moyenne</p>
-                    </div>
-                </div>
+    <h2 class="mb-4">Statistiques</h2>
+    <div class="row g-4">
+        <!-- Stats MySQL -->
+        <div class="col-md-4">
+            <div class="card p-4 text-center">
+                <h2 class="stat-number"><?= count($mes_lives) ?></h2>
+                <p class="stat-label">Live<?= count($mes_lives) > 1 ? 's' : '' ?> créé<?= count($mes_lives) > 1 ? 's' : '' ?></p>
             </div>
-        <?php endif; ?>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 text-center">
+                <h2 class="stat-number"><?= count($inscriptions) ?></h2>
+                <p class="stat-label">Inscription<?= count($inscriptions) > 1 ? 's' : '' ?> totale<?= count($inscriptions) > 1 ? 's' : '' ?></p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 text-center">
+                <h2 class="stat-number">
+                    <?= count($mes_lives) > 0 ? round(count($inscriptions) / count($mes_lives), 1) : 0 ?>
+                </h2>
+                <p class="stat-label">Inscriptions par live en moyenne</p>
+            </div>
+        </div>
 
+        <!-- Stats MongoDB -->
+        <div class="col-12 mt-4">
+            <h3 class="mb-3">Vues de mes lives <span class="text-muted-zevent fs-6">(données temps réel)</span></h3>
+            <div class="row g-4">
+                <?php foreach ($mes_lives as $live) :
+                    $nbVues = $mongoDB->vues->countDocuments(['id_live' => (int)$live['id_live']]); // Compte le nb de document qui corresepond au filtre
+                ?>
+                    <div class="col-md-4">
+                        <div class="card p-3">
+                            <h5 class="card-title"><?= htmlspecialchars($live['nom_live']) ?></h5>
+                            <h3 class="stat-number"><?= $nbVues ?></h3>
+                            <p class="stat-label">vue<?= $nbVues > 1 ? 's' : '' ?></p>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
     </div>
 </section>
 

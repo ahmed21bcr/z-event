@@ -1,14 +1,4 @@
 <?php
-session_start();
-
-if (isset($_SESSION['user'])) {
-    if ($_SESSION['user']['role'] === 'admin') {
-        header('Location: index.php?page=espace_admin');
-    } else {
-        header('Location: index.php?page=espace_streamer');
-    }
-    exit;
-}
 
 $erreur = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
