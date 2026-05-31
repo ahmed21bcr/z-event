@@ -2,8 +2,8 @@
 $stmt = $pdo->prepare("
     SELECT l.id_live, l.nom_live, l.date_live, l.heure_live, l.description,
            u.nom, u.prenom, u.nom_chaine
-    FROM Live l
-    JOIN User u ON l.id_user = u.id_user
+    FROM live l
+    JOIN user u ON l.id_user = u.id_user
     ORDER BY l.date_live ASC
     LIMIT 3
 ");

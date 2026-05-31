@@ -6,8 +6,8 @@ $filtre_streamer = $_GET['streamer'] ?? '';
 $sql = "
     SELECT l.id_live, l.nom_live, l.date_live, l.heure_live, l.description, l.PEGI,
            u.nom, u.prenom, u.nom_chaine
-    FROM Live l
-    JOIN User u ON l.id_user = u.id_user
+    FROM live l
+    JOIN user u ON l.id_user = u.id_user
     WHERE 1=1
 ";
 
@@ -15,7 +15,7 @@ $params = [];
 
 if (!empty($filtre_thematique)) {
     $sql .= " AND l.id_live IN (
-        SELECT id_live FROM Live_Thematique WHERE id_thematique = :thematique
+        SELECT id_live FROM live_thematique WHERE id_thematique = :thematique
     )";
     $params[':thematique'] = $filtre_thematique;
 }
@@ -36,11 +36,11 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $lives = $stmt->fetchAll();
 
-$stmtThemes = $pdo->prepare("SELECT * FROM Thematique");
+$stmtThemes = $pdo->prepare("SELECT * FROM thematique");
 $stmtThemes->execute();
 $thematiques = $stmtThemes->fetchAll();
 
-$stmtStreamers = $pdo->prepare("SELECT id_user, nom, prenom, nom_chaine FROM User WHERE role = 'streamer'");
+$stmtStreamers = $pdo->prepare("SELECT id_user, nom, prenom, nom_chaine FROM user WHERE role = 'streamer'");
 $stmtStreamers->execute();
 $streamers = $stmtStreamers->fetchAll();
 ?>

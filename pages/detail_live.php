@@ -8,9 +8,9 @@ if (!$id_live || !is_numeric($id_live)) {
 
 $stmt = $pdo->prepare("
     SELECT l.*, u.nom, u.prenom, u.nom_chaine, e.association, e.date_debut, e.date_fin
-    FROM Live l
-    JOIN User u ON l.id_user = u.id_user
-    JOIN Evenement e ON l.id_evenement = e.id_evenement
+    FROM live l
+    JOIN user u ON l.id_user = u.id_user
+    JOIN evenement e ON l.id_evenement = e.id_evenement
     WHERE l.id_live = :id
 ");
 $stmt->execute([':id' => $id_live]);
@@ -23,8 +23,8 @@ if (!$live) {
 
 $stmtThemes = $pdo->prepare("
     SELECT t.libelle
-    FROM Thematique t
-    JOIN Live_Thematique lt ON t.id_thematique = lt.id_thematique
+    FROM thematique t
+    JOIN live_thematique lt ON t.id_thematique = lt.id_thematique
     WHERE lt.id_live = :id
 ");
 $stmtThemes->execute([':id' => $id_live]);
@@ -32,8 +32,8 @@ $thematiques = $stmtThemes->fetchAll();
 
 $stmtMateriel = $pdo->prepare("
     SELECT m.libelle, m.marque, lm.quantite
-    FROM Materiel m
-    JOIN Live_Materiel lm ON m.id_materiel = lm.id_materiel
+    FROM materiel m
+    JOIN live_materiel lm ON m.id_materiel = lm.id_materiel
     WHERE lm.id_live = :id
 ");
 $stmtMateriel->execute([':id' => $id_live]);
@@ -49,20 +49,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $erreur = 'Format d\'email invalide.';
     } else {
-        $stmtCheck = $pdo->prepare("SELECT id_inscription FROM Inscription WHERE email = :email AND id_live = :id_live");
+        $stmtCheck = $pdo->prepare("SELECT id_inscription FROM inscription WHERE email = :email AND id_live = :id_live");
         $stmtCheck->execute([':email' => $email, ':id_live' => $id_live]);
 
         if ($stmtCheck->fetch()) {
             $erreur = 'Vous êtes déjà inscrit à ce live.';
         } else {
-            $stmtInsert = $pdo->prepare("INSERT INTO Inscription (email, id_live) VALUES (:email, :id_live)");
+            $stmtInsert = $pdo->prepare("INSERT INTO inscription (email, id_live) VALUES (:email, :id_live)");
             $stmtInsert->execute([':email' => $email, ':id_live' => $id_live]);
             $message = 'Inscription confirmée ! Vous recevrez un rappel par email.';
         }
     }
 }
 
-$stmtCount = $pdo->prepare("SELECT COUNT(*) as total FROM Inscription WHERE id_live = :id");
+$stmtCount = $pdo->prepare("SELECT COUNT(*) as total FROM inscription WHERE id_live = :id");
 $stmtCount->execute([':id' => $id_live]);
 $nbInscrits = $stmtCount->fetch()['total'];
 

@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $erreur = 'Veuillez remplir tous les champs obligatoires.';
         $onglet = 'creer_streamer';
     } else {
-        $stmtCheck = $pdo->prepare("SELECT id_user FROM User WHERE email = :email");
+        $stmtCheck = $pdo->prepare("SELECT id_user FROM user WHERE email = :email");
         $stmtCheck->execute([':email' => $email]);
         if ($stmtCheck->fetch()) {
             $erreur = 'Cet email est déjà utilisé.';
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         } else {
             $hash = password_hash($password, PASSWORD_DEFAULT);
             $stmt = $pdo->prepare("
-                INSERT INTO User (nom, prenom, email, password, age, nom_chaine, role, matricule)
+                INSERT INTO user (nom, prenom, email, password, age, nom_chaine, role, matricule)
                 VALUES (:nom, :prenom, :email, :password, :age, :nom_chaine, 'streamer', :matricule)
             ");
             $stmt->execute([
@@ -53,8 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 $stmtStreamers = $pdo->prepare("
     SELECT u.*, COUNT(l.id_live) as nb_lives
-    FROM User u
-    LEFT JOIN Live l ON u.id_user = l.id_user
+    FROM user u
+    LEFT JOIN live l ON u.id_user = l.id_user
     WHERE u.role = 'streamer'
     GROUP BY u.id_user
     ORDER BY u.nom ASC
@@ -64,8 +64,8 @@ $streamers = $stmtStreamers->fetchAll();
 
 $stmtMateriels = $pdo->prepare("
     SELECT m.*, COALESCE(SUM(lm.quantite), 0) as quantite_utilisee
-    FROM Materiel m
-    LEFT JOIN Live_Materiel lm ON m.id_materiel = lm.id_materiel
+    FROM materiel m
+    LEFT JOIN live_materiel lm ON m.id_materiel = lm.id_materiel
     GROUP BY m.id_materiel
     ORDER BY m.libelle ASC
 ");

@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $onglet = 'saisie';
     } else {
         $stmt = $pdo->prepare("
-            INSERT INTO Live (nom_live, date_live, heure_live, PEGI, description, id_user, id_evenement)
+            INSERT INTO live (nom_live, date_live, heure_live, PEGI, description, id_user, id_evenement)
             VALUES (:nom_live, :date_live, :heure_live, :pegi, :description, :id_user, :id_evenement)
         ");
         $stmt->execute([
@@ -45,8 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 $stmtLives = $pdo->prepare("
     SELECT l.*, e.association
-    FROM Live l
-    JOIN Evenement e ON l.id_evenement = e.id_evenement
+    FROM live l
+    JOIN evenement e ON l.id_evenement = e.id_evenement
     WHERE l.id_user = :id_user
     ORDER BY l.date_live ASC
 ");
@@ -55,19 +55,19 @@ $mes_lives = $stmtLives->fetchAll();
 
 $stmtInscriptions = $pdo->prepare("
     SELECT i.email, i.id_inscription, l.nom_live, l.date_live
-    FROM Inscription i
-    JOIN Live l ON i.id_live = l.id_live
+    FROM inscription i
+    JOIN live l ON i.id_live = l.id_live
     WHERE l.id_user = :id_user
     ORDER BY l.date_live ASC
 ");
 $stmtInscriptions->execute([':id_user' => $id_user]);
 $inscriptions = $stmtInscriptions->fetchAll();
 
-$stmtEvenements = $pdo->prepare("SELECT * FROM Evenement");
+$stmtEvenements = $pdo->prepare("SELECT * FROM evenement");
 $stmtEvenements->execute();
 $evenements = $stmtEvenements->fetchAll();
 
-$stmtThemes = $pdo->prepare("SELECT * FROM Thematique");
+$stmtThemes = $pdo->prepare("SELECT * FROM thematique");
 $stmtThemes->execute();
 $thematiques = $stmtThemes->fetchAll();
 ?>

@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($email) || empty($password)) {
         $erreur = 'Veuillez remplir tous les champs.';
     } else {
-        $stmt = $pdo->prepare("SELECT * FROM User WHERE email = :email");
+        $stmt = $pdo->prepare("SELECT * FROM user WHERE email = :email");
         $stmt->execute([':email' => $email]);
         $user = $stmt->fetch();
 
