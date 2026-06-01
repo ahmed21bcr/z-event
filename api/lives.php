@@ -1,5 +1,5 @@
 <?php
-require_once '../classes/LiveRepository.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/LiveRepository.php';
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');

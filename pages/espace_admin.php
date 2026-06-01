@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../classes/UserRepository.php';
-require_once __DIR__ . '/../classes/LiveRepository.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/UserRepository.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/LiveRepository.php';
 
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
     header('Location: index.php?page=connexion');

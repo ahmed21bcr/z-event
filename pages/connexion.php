@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../classes/UserRepository.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/UserRepository.php';
 
 $erreur = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
