@@ -1,26 +1,26 @@
 <?php
+require_once __DIR__ . '/../classes/UserRepository.php';
 
 $erreur = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email'] ?? '');
+    $email    = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
     if (empty($email) || empty($password)) {
         $erreur = 'Veuillez remplir tous les champs.';
     } else {
-        $stmt = $pdo->prepare("SELECT * FROM user WHERE email = :email");
-        $stmt->execute([':email' => $email]);
-        $user = $stmt->fetch();
+        $userRepository = new UserRepository();
+        $user = $userRepository->findByEmail($email);
 
-        if ($user && password_verify($password, $user['password'])) {
+        if ($user && password_verify($password, $user->password)) {
             $_SESSION['user'] = [
-                'id_user'    => $user['id_user'],
-                'nom'        => $user['nom'],
-                'prenom'     => $user['prenom'],
-                'role'       => $user['role'],
-                'nom_chaine' => $user['nom_chaine']
+                'id_user'    => $user->id_user,
+                'nom'        => $user->nom,
+                'prenom'     => $user->prenom,
+                'role'       => $user->role,
+                'nom_chaine' => $user->nom_chaine
             ];
-            if ($user['role'] === 'admin') {
+            if ($user->isAdmin()) {
                 header('Location: index.php?page=espace_admin');
             } else {
                 header('Location: index.php?page=espace_streamer');

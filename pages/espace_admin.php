@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../classes/UserRepository.php';
+require_once __DIR__ . '/../classes/LiveRepository.php';
+
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
     header('Location: index.php?page=connexion');
     exit;
@@ -10,8 +13,12 @@ if (!in_array($onglet, $onglets_autorises)) {
     $onglet = 'streamers';
 }
 
+$userRepository = new UserRepository();
+$liveRepository = new LiveRepository();
+
 $message = '';
 $erreur = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'creer_streamer') {
     $nom        = trim($_POST['nom'] ?? '');
     $prenom     = trim($_POST['prenom'] ?? '');
@@ -25,25 +32,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $erreur = 'Veuillez remplir tous les champs obligatoires.';
         $onglet = 'creer_streamer';
     } else {
-        $stmtCheck = $pdo->prepare("SELECT id_user FROM user WHERE email = :email");
-        $stmtCheck->execute([':email' => $email]);
-        if ($stmtCheck->fetch()) {
+        if ($userRepository->emailExists($email)) {
             $erreur = 'Cet email est déjà utilisé.';
             $onglet = 'creer_streamer';
         } else {
-            $hash = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare("
-                INSERT INTO user (nom, prenom, email, password, age, nom_chaine, role, matricule)
-                VALUES (:nom, :prenom, :email, :password, :age, :nom_chaine, 'streamer', :matricule)
-            ");
-            $stmt->execute([
-                ':nom'        => $nom,
-                ':prenom'     => $prenom,
-                ':email'      => $email,
-                ':password'   => $hash,
-                ':age'        => $age,
-                ':nom_chaine' => $nom_chaine,
-                ':matricule'  => $matricule
+            $userRepository->create([
+                'nom'        => $nom,
+                'prenom'     => $prenom,
+                'email'      => $email,
+                'password'   => password_hash($password, PASSWORD_DEFAULT),
+                'age'        => $age,
+                'nom_chaine' => $nom_chaine,
+                'role'       => 'streamer',
+                'matricule'  => $matricule
             ]);
             $message = 'Streamer créé avec succès !';
             $onglet = 'streamers';
@@ -51,18 +52,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-$stmtStreamers = $pdo->prepare("
-    SELECT u.*, COUNT(l.id_live) as nb_lives
-    FROM user u
-    LEFT JOIN live l ON u.id_user = l.id_user
-    WHERE u.role = 'streamer'
-    GROUP BY u.id_user
-    ORDER BY u.nom ASC
-");
-$stmtStreamers->execute();
-$streamers = $stmtStreamers->fetchAll();
+$streamers = $userRepository->findAllStreamers();
 
-$stmtMateriels = $pdo->prepare("
+$stmtMateriels = Database::getInstance()->prepare("
     SELECT m.*, COALESCE(SUM(lm.quantite), 0) as quantite_utilisee
     FROM materiel m
     LEFT JOIN live_materiel lm ON m.id_materiel = lm.id_materiel

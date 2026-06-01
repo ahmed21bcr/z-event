@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../classes/UserRepository.php';
+require_once __DIR__ . '/../classes/LiveRepository.php';
+
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'streamer') {
     header('Location: index.php?page=connexion');
     exit;
@@ -11,8 +14,10 @@ if (!in_array($onglet, $onglets_autorises)) {
     $onglet = 'accueil';
 }
 
+$liveRepository = new LiveRepository();
 $message_saisie = '';
 $erreur_saisie = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'creer_live') {
     $nom_live     = trim($_POST['nom_live'] ?? '');
     $date_live    = $_POST['date_live'] ?? '';
@@ -25,35 +30,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $erreur_saisie = 'Veuillez remplir tous les champs obligatoires.';
         $onglet = 'saisie';
     } else {
-        $stmt = $pdo->prepare("
-            INSERT INTO live (nom_live, date_live, heure_live, PEGI, description, id_user, id_evenement)
-            VALUES (:nom_live, :date_live, :heure_live, :pegi, :description, :id_user, :id_evenement)
-        ");
-        $stmt->execute([
-            ':nom_live'     => $nom_live,
-            ':date_live'    => $date_live,
-            ':heure_live'   => $heure_live,
-            ':pegi'         => $pegi,
-            ':description'  => $description,
-            ':id_user'      => $id_user,
-            ':id_evenement' => $id_evenement
+        $liveRepository->create([
+            'nom_live'     => $nom_live,
+            'date_live'    => $date_live,
+            'heure_live'   => $heure_live,
+            'pegi'         => $pegi,
+            'description'  => $description,
+            'id_user'      => $id_user,
+            'id_evenement' => $id_evenement
         ]);
         $message_saisie = 'Live créé avec succès !';
         $onglet = 'accueil';
     }
 }
 
-$stmtLives = $pdo->prepare("
-    SELECT l.*, e.association
-    FROM live l
-    JOIN evenement e ON l.id_evenement = e.id_evenement
-    WHERE l.id_user = :id_user
-    ORDER BY l.date_live ASC
-");
-$stmtLives->execute([':id_user' => $id_user]);
-$mes_lives = $stmtLives->fetchAll();
+$mes_lives = $liveRepository->findByUserId($id_user);
 
-$stmtInscriptions = $pdo->prepare("
+$stmtInscriptions = Database::getInstance()->prepare("
     SELECT i.email, i.id_inscription, l.nom_live, l.date_live
     FROM inscription i
     JOIN live l ON i.id_live = l.id_live
@@ -63,11 +56,11 @@ $stmtInscriptions = $pdo->prepare("
 $stmtInscriptions->execute([':id_user' => $id_user]);
 $inscriptions = $stmtInscriptions->fetchAll();
 
-$stmtEvenements = $pdo->prepare("SELECT * FROM evenement");
+$stmtEvenements = Database::getInstance()->prepare("SELECT * FROM evenement");
 $stmtEvenements->execute();
 $evenements = $stmtEvenements->fetchAll();
 
-$stmtThemes = $pdo->prepare("SELECT * FROM thematique");
+$stmtThemes = Database::getInstance()->prepare("SELECT * FROM thematique");
 $stmtThemes->execute();
 $thematiques = $stmtThemes->fetchAll();
 ?>
@@ -133,9 +126,9 @@ $thematiques = $stmtThemes->fetchAll();
                                         <span class="live-thumbnail-icon">▶</span>
                                     </div>
                                 </div>
-                                <h5 class="card-title"><?= htmlspecialchars($live['nom_live']) ?></h5>
-                                <p class="card-text">📅 <?= htmlspecialchars($live['date_live']) ?> à <?= htmlspecialchars($live['heure_live']) ?></p>
-                                <a href="index.php?page=detail_live&id=<?= $live['id_live'] ?>" class="btn btn-outline-accent mt-2">Voir</a>
+                                <h5 class="card-title"><?= htmlspecialchars($live->nom_live) ?></h5>
+                                    <p class="card-text">📅 <?= htmlspecialchars($live->date_live) ?> à <?= htmlspecialchars($live->heure_live) ?></p>
+                                <a href="index.php?page=detail_live&id=<?= $live->id_live ?>" class="btn btn-outline-accent mt-2">Voir</a>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -268,12 +261,12 @@ $thematiques = $stmtThemes->fetchAll();
         <div class="col-12 mt-4">
             <h3 class="mb-3">Vues de mes lives <span class="text-muted-zevent fs-6">(données temps réel)</span></h3>
             <div class="row g-4">
-                <?php foreach ($mes_lives as $live) :
-                    $nbVues = $mongoDB->vues->countDocuments(['id_live' => (int)$live['id_live']]); // Compte le nb de document qui corresepond au filtre
-                ?>
-                    <div class="col-md-4">
-                        <div class="card p-3">
-                            <h5 class="card-title"><?= htmlspecialchars($live['nom_live']) ?></h5>
+            <?php foreach ($mes_lives as $live) :
+    $nbVues = $mongoDB->vues->countDocuments(['id_live' => (int)$live->id_live]);
+            ?>
+    <div class="col-md-4">
+        <div class="card p-3">
+            <h5 class="card-title"><?= htmlspecialchars($live->nom_live) ?></h5>
                             <h3 class="stat-number"><?= $nbVues ?></h3>
                             <p class="stat-label">vue<?= $nbVues > 1 ? 's' : '' ?></p>
                         </div>
