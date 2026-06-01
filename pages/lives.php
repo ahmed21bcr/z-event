@@ -81,7 +81,7 @@ $streamers = $stmtStreamers->fetchAll();
 <!-- FOOTER -->
 <footer>
     <div class="container">
-        <p class="mb-0">© Z-Event 2026 — Tous droits réservés</p>
+        <p class="mb-0">© Z-Event 2026 - Tous droits réservés</p>
     </div>
 </footer>
 
