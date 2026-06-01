@@ -1,6 +1,6 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/UserRepository.php';
+require_once ROOT_PATH . '/classes/UserRepository.php';
 
 class UserController {
     private UserRepository $userRepository;

@@ -1,6 +1,6 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/LiveRepository.php';
+require_once __DIR__ . '/../classes/LiveRepository.php';
 
 class LiveController {
     private LiveRepository $liveRepository;

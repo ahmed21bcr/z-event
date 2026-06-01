@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/controllers/UserController.php';
+require_once ROOT_PATH . '/controllers/UserController.php';
 
 $erreur = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

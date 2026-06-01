@@ -1,4 +1,7 @@
 <?php
+
+define('ROOT_PATH', __DIR__);
+
 session_start();
 require_once 'config/db.php';
 require_once 'config/mongo.php';

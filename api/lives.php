@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/controllers/LiveController.php';
+require_once __DIR__ . '/../controllers/LiveController.php';
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');

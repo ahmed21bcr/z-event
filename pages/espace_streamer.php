@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/controllers/LiveController.php';
+require_once ROOT_PATH . '/controllers/LiveController.php';
 
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'streamer') {
     header('Location: index.php?page=connexion');

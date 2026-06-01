@@ -1,7 +1,7 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/Database.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/Live.php';
+require_once __DIR__ . '/Database.php';
+require_once __DIR__ . '/Live.php';
 
 class LiveRepository {
     private PDO $pdo;

@@ -1,7 +1,7 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/Database.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/User.php';
+require_once __DIR__ . '/Database.php';
+require_once __DIR__ . '/User.php';
 
 class UserRepository {
     private PDO $pdo;
