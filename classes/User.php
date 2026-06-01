@@ -34,4 +34,6 @@ class User {
     public function getFullName(): string {
         return $this->prenom . ' ' . $this->nom;
     }
+
+    public int $nb_lives = 0;
 }

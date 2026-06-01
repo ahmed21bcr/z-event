@@ -29,12 +29,22 @@ class UserRepository {
     }
 
     public function findAllStreamers(): array {
-        $stmt = $this->pdo->prepare("
-            SELECT * FROM user WHERE role = 'streamer' ORDER BY nom ASC
-        ");
-        $stmt->execute();
-        return array_map(fn($row) => new User($row), $stmt->fetchAll());
-    }
+    $stmt = $this->pdo->prepare("
+        SELECT u.*, COUNT(l.id_live) as nb_lives
+        FROM user u
+        LEFT JOIN live l ON u.id_user = l.id_user
+        WHERE u.role = 'streamer'
+        GROUP BY u.id_user
+        ORDER BY u.nom ASC
+    ");
+    $stmt->execute();
+    $rows = $stmt->fetchAll();
+    return array_map(function($row) {
+        $user = new User($row);
+        $user->nb_lives = $row['nb_lives'];
+        return $user;
+    }, $rows);
+}
 
     public function create(array $data): bool {
         $stmt = $this->pdo->prepare("
