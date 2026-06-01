@@ -1,6 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/UserRepository.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/LiveRepository.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/controllers/LiveController.php';
 
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'streamer') {
     header('Location: index.php?page=connexion');
@@ -14,37 +13,31 @@ if (!in_array($onglet, $onglets_autorises)) {
     $onglet = 'accueil';
 }
 
-$liveRepository = new LiveRepository();
+$liveController = new LiveController();
 $message_saisie = '';
 $erreur_saisie = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'creer_live') {
-    $nom_live     = trim($_POST['nom_live'] ?? '');
-    $date_live    = $_POST['date_live'] ?? '';
-    $heure_live   = $_POST['heure_live'] ?? '';
-    $pegi         = $_POST['pegi'] ?? '';
-    $description  = trim($_POST['description'] ?? '');
-    $id_evenement = $_POST['id_evenement'] ?? '';
+    $data = [
+        'nom_live'     => trim($_POST['nom_live'] ?? ''),
+        'date_live'    => $_POST['date_live'] ?? '',
+        'heure_live'   => $_POST['heure_live'] ?? '',
+        'pegi'         => $_POST['pegi'] ?? '',
+        'description'  => trim($_POST['description'] ?? ''),
+        'id_user'      => $id_user,
+        'id_evenement' => $_POST['id_evenement'] ?? ''
+    ];
 
-    if (empty($nom_live) || empty($date_live) || empty($heure_live) || empty($id_evenement)) {
-        $erreur_saisie = 'Veuillez remplir tous les champs obligatoires.';
-        $onglet = 'saisie';
-    } else {
-        $liveRepository->create([
-            'nom_live'     => $nom_live,
-            'date_live'    => $date_live,
-            'heure_live'   => $heure_live,
-            'pegi'         => $pegi,
-            'description'  => $description,
-            'id_user'      => $id_user,
-            'id_evenement' => $id_evenement
-        ]);
+    if ($liveController->create($data)) {
         $message_saisie = 'Live créé avec succès !';
         $onglet = 'accueil';
+    } else {
+        $erreur_saisie = 'Veuillez remplir tous les champs obligatoires.';
+        $onglet = 'saisie';
     }
 }
 
-$mes_lives = $liveRepository->findByUserId($id_user);
+$mes_lives = $liveController->getByUser($id_user);
 
 $stmtInscriptions = Database::getInstance()->prepare("
     SELECT i.email, i.id_inscription, l.nom_live, l.date_live

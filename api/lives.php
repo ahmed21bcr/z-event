@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/LiveRepository.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/controllers/LiveController.php';
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -8,8 +8,8 @@ $thematique = $_GET['thematique'] ?? '';
 $date       = $_GET['date'] ?? '';
 $streamer   = $_GET['streamer'] ?? '';
 
-$liveRepository = new LiveRepository();
-$lives = $liveRepository->findWithFilters($thematique, $date, $streamer);
+$liveController = new LiveController();
+$lives = $liveController->filter($thematique, $date, $streamer);
 
 $result = array_map(fn($live) => [
     'id_live'    => $live->id_live,

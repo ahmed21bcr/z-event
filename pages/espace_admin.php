@@ -1,6 +1,6 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/UserRepository.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/LiveRepository.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/controllers/UserController.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/controllers/LiveController.php';
 
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
     header('Location: index.php?page=connexion');
@@ -13,46 +13,33 @@ if (!in_array($onglet, $onglets_autorises)) {
     $onglet = 'streamers';
 }
 
-$userRepository = new UserRepository();
-$liveRepository = new LiveRepository();
+$userController = new UserController();
+$liveController = new LiveController();
 
 $message = '';
 $erreur = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'creer_streamer') {
-    $nom        = trim($_POST['nom'] ?? '');
-    $prenom     = trim($_POST['prenom'] ?? '');
-    $email      = trim($_POST['email'] ?? '');
-    $password   = $_POST['password'] ?? '';
-    $age        = $_POST['age'] ?? '';
-    $nom_chaine = trim($_POST['nom_chaine'] ?? '');
-    $matricule  = trim($_POST['matricule'] ?? '');
+    $result = $userController->createStreamer([
+        'nom'        => trim($_POST['nom'] ?? ''),
+        'prenom'     => trim($_POST['prenom'] ?? ''),
+        'email'      => trim($_POST['email'] ?? ''),
+        'password'   => $_POST['password'] ?? '',
+        'age'        => $_POST['age'] ?? null,
+        'nom_chaine' => trim($_POST['nom_chaine'] ?? ''),
+        'matricule'  => trim($_POST['matricule'] ?? '')
+    ]);
 
-    if (empty($nom) || empty($prenom) || empty($email) || empty($password) || empty($nom_chaine)) {
-        $erreur = 'Veuillez remplir tous les champs obligatoires.';
-        $onglet = 'creer_streamer';
+    if ($result === true) {
+        $message = 'Streamer créé avec succès !';
+        $onglet = 'streamers';
     } else {
-        if ($userRepository->emailExists($email)) {
-            $erreur = 'Cet email est déjà utilisé.';
-            $onglet = 'creer_streamer';
-        } else {
-            $userRepository->create([
-                'nom'        => $nom,
-                'prenom'     => $prenom,
-                'email'      => $email,
-                'password'   => password_hash($password, PASSWORD_DEFAULT),
-                'age'        => $age,
-                'nom_chaine' => $nom_chaine,
-                'role'       => 'streamer',
-                'matricule'  => $matricule
-            ]);
-            $message = 'Streamer créé avec succès !';
-            $onglet = 'streamers';
-        }
+        $erreur = $result;
+        $onglet = 'creer_streamer';
     }
 }
 
-$streamers = $userRepository->findAllStreamers();
+$streamers = $userController->getAllStreamers();
 
 $stmtMateriels = Database::getInstance()->prepare("
     SELECT m.*, COALESCE(SUM(lm.quantite), 0) as quantite_utilisee

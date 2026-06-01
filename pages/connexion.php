@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/UserRepository.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/controllers/UserController.php';
 
 $erreur = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -9,10 +9,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($email) || empty($password)) {
         $erreur = 'Veuillez remplir tous les champs.';
     } else {
-        $userRepository = new UserRepository();
-        $user = $userRepository->findByEmail($email);
+        $userController = new UserController();
+        $user = $userController->login($email, $password);
 
-        if ($user && password_verify($password, $user->password)) {
+        if ($user) {
             $_SESSION['user'] = [
                 'id_user'    => $user->id_user,
                 'nom'        => $user->nom,
