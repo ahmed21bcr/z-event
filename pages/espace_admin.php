@@ -132,13 +132,13 @@ $materiels = $stmtMateriels->fetchAll();
                         <tbody>
                             <?php foreach ($streamers as $streamer) : ?>
                                 <tr>
-                                    <td><?= htmlspecialchars($streamer['nom']) ?> <?= htmlspecialchars($streamer['prenom']) ?></td>
-                                    <td><?= htmlspecialchars($streamer['nom_chaine']) ?></td>
-                                    <td><?= htmlspecialchars($streamer['email']) ?></td>
-                                    <td><?= htmlspecialchars($streamer['matricule']) ?></td>
+                                    <td><?= htmlspecialchars($streamer->nom) ?> <?= htmlspecialchars($streamer->prenom) ?></td>
+                                    <td><?= htmlspecialchars($streamer->nom_chaine) ?></td>
+                                    <td><?= htmlspecialchars($streamer->email) ?></td>
+                                    <td><?= htmlspecialchars($streamer->matricule) ?></td>
                                     <td>
                                         <span class="badge badge-accent">
-                                            <?= $streamer['nb_lives'] ?> live<?= $streamer['nb_lives'] > 1 ? 's' : '' ?>
+                                            <?= $streamer->nb_lives ?> live<?= $streamer->nb_lives > 1 ? 's' : '' ?>
                                         </span>
                                     </td>
                                 </tr>
